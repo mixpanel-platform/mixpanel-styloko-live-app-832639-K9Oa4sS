@@ -7,9 +7,32 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    <h1>Hello, World!</h1>
-    <script>
-      // Run queries and display results here
-    </script>
+  <center><h1>Total Unique Count per Event</h1></center>
+      <script>
+       MP.api.query('/api/2.0/events/names').done(function(results) {
+          var allEvents = results;
+          console.log(allEvents)
+            
+          var params = {
+              type: 'unique',     
+              unit: 'day',        
+              interval: 1   
+          };
+        
+          var arrayLength = allEvents.length;
+          
+          for (var i = 0; i < arrayLength; i++) {
+            MP.api.events(allEvents[i], params).done(function(results) {
+            console.log(results.values());
+               $('<div></div>').appendTo('body').MPTable({ 
+                  data: results,
+                  showPercentages: false,
+                  firstColHeader: 'Event Name'
+               });
+            }); 
+          };
+       
+        });
+      </script>
   </body>
 </html>
