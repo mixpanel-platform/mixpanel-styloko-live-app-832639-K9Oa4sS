@@ -10,28 +10,28 @@
   <center><h1>Total Unique Count per Event</h1></center>
       <script>
        MP.api.query('/api/2.0/events/names').done(function(results) {
-          var allEvents = results;
-          console.log(allEvents)
-            
           var params = {
               type: 'unique',     
               unit: 'day',        
               interval: 1   
           };
-        
-          var arrayLength = allEvents.length;
-          
-          for (var i = 0; i < arrayLength; i++) {
-            MP.api.events(allEvents[i], params).done(function(results) {
-            console.log(results.values());
-               $('<div></div>').appendTo('body').MPTable({ 
-                  data: results,
-                  showPercentages: false,
-                  firstColHeader: 'Event Name'
-               });
+          var today = new Date().toISOString().split('T')[0]
+          var eventCollection = {}
+          _.each(results, function(eventName) {
+            MP.api.events(eventName, params).done(function(results) {
+                var cleanedData = {}
+                cleanedData[eventName] = {}
+                cleanedData[eventName][today] = results[eventName][today]
+                _.extend(eventCollection, cleanedData)
+                console.log(eventCollection)
             }); 
-          };
-       
+          });
+          
+        // $('<div></div>').appendTo('body').MPTable({ 
+        //     data: results,
+        //     showPercentages: false,
+        //     firstColHeader: 'Event Name'
+        // });
         });
       </script>
   </body>
