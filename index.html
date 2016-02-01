@@ -17,21 +17,25 @@
           };
           var today = new Date().toISOString().split('T')[0]
           var eventCollection = {}
+          var requests = []
           _.each(results, function(eventName) {
-            MP.api.events(eventName, params).done(function(results) {
+            var d = MP.api.events(eventName, params).done(function(results) {
                 var cleanedData = {}
                 cleanedData[eventName] = {}
-                cleanedData[eventName][today] = results[eventName][today]
+                cleanedData[eventName][today] = results.values()[eventName][today]
                 _.extend(eventCollection, cleanedData)
-                console.log(eventCollection)
             }); 
+            requests.push(d)
           });
-          
-        // $('<div></div>').appendTo('body').MPTable({ 
-        //     data: results,
-        //     showPercentages: false,
-        //     firstColHeader: 'Event Name'
-        // });
+          $.when
+            .apply($, requests)
+            .done(function(){
+              $('<div></div>').appendTo('body').MPTable({ 
+                data: eventCollection,
+                showPercentages: false,
+                firstColHeader: 'Event Name'
+              });  
+          })
         });
       </script>
   </body>
